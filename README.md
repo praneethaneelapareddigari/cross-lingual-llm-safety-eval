@@ -103,12 +103,12 @@ This project contributes:
 
 ```mermaid
 graph TD
-    A[Seed Prompts\nAdvBench · XSTest · HONEST] <--> B[Translation\nNLLB-200 + back-translation QA]
-    B --> C[Generation\nOllama: Llama · Gemma · Qwen]
-    C --> DJJudge Layer\nRule-based classifier + manual κ validation]
-    D --> E[Statistics\nMcNemar · Wilson CI · Bootstrap · Cohen's h/κ
-    E --> F[Visualization\nHeatmaps · Bar charts · Effect-size scatter]
-    F --> G\[Technical Report\]
+    A[Seed] --> B[Translate]
+    B --> C[Generate]
+    C --> D[Judge]
+    D --> E[Statistics]
+    E --> F[Visualize]
+    F --> G[Report]
 ```
 
 The evaluation pipeline consists of five stages: (1) dataset construction from published benchmarks, (2) NLLB-200 translation with back-translation fidelity QA, (3) model inference via Ollama at temperature 0, (4) safety evaluation via rule-based judge with manual validation, and (5) paired statistical analysis across language pairs.
