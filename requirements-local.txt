@@ -1,0 +1,13 @@
+# Additional dependencies for the fully-local, zero-API-key pipeline
+# (NLLB-200 translation + Ollama generation + rule-based judge).
+# Install alongside requirements.txt:
+#   pip install --break-system-packages -r requirements.txt -r requirements-local.txt
+#
+# NOT included in requirements.txt by default because torch is large (~2GB)
+# and unnecessary if you're only running the paid-API path.
+
+transformers>=4.44
+torch>=2.3          # CPU-only build is fine: pip install torch --index-url https://download.pytorch.org/whl/cpu
+sentencepiece>=0.2.0
+sacremoses>=0.1.1
+requests>=2.32       # Ollama's local REST API client

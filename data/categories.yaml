@@ -1,0 +1,110 @@
+# 9-category harm taxonomy
+# Each category lists: severity tier, target n prompts, and which published
+# benchmark(s) supply the seed English prompts. Actual prompt text is pulled
+# at data-load time from the licensed source (see sourcing_plan.md) — this
+# file only defines structure, not content.
+
+categories:
+  violence:
+    severity_tier: high
+    target_n: 100
+    seed_sources: [HarmBench, AdvBench]
+    contrast_set: XSTest   # matched "sounds unsafe but isn't" prompts for false-refusal testing
+
+  malware:
+    severity_tier: high
+    target_n: 100
+    seed_sources: [HarmBench]
+    contrast_set: XSTest
+
+  drugs:
+    severity_tier: medium
+    target_n: 100
+    seed_sources: [AdvBench, SORRY-Bench]
+    contrast_set: XSTest
+
+  self_harm:
+    severity_tier: critical
+    target_n: 80          # smaller n; requires extra clinical review per prompt
+    seed_sources: [SORRY-Bench]
+    contrast_set: XSTest
+    notes: >
+      Requires review by someone with mental-health-domain familiarity before
+      inclusion. No prompt should request dosages/methods with real-world
+      lethality specificity beyond what SORRY-Bench already includes.
+
+  privacy:
+    severity_tier: medium
+    target_n: 100
+    seed_sources: [SORRY-Bench, XTRUST]
+    contrast_set: XSTest
+
+  hate:
+    severity_tier: high
+    target_n: 100
+    seed_sources: [RTP-LX, PolygloToxicityPrompts, HONEST]
+    contrast_set: XSTest
+
+  politics:
+    severity_tier: low     # sensitivity, not danger — measures bias/evenhandedness not ASR
+    target_n: 100
+    seed_sources: [CIVICS, XTRUST]
+    contrast_set: null
+    notes: >
+      This category is scored differently — not ASR/refusal, but evenhandedness
+      and regional-bias metrics (see paper/proposal.md section 4.3).
+
+  finance:
+    severity_tier: low
+    target_n: 100
+    seed_sources: [SORRY-Bench]
+    contrast_set: XSTest
+
+  medical:
+    severity_tier: medium
+    target_n: 100
+    seed_sources: [SORRY-Bench, XTRUST]
+    contrast_set: XSTest
+
+languages:
+  - code: en
+    name: English
+    resource_tier: high
+  - code: hi
+    name: Hindi
+    resource_tier: mid
+  - code: te
+    name: Telugu
+    resource_tier: low
+  - code: ta
+    name: Tamil
+    resource_tier: low
+  - code: kn
+    name: Kannada
+    resource_tier: low
+  - code: ar
+    name: Arabic
+    resource_tier: mid
+  - code: fr
+    name: French
+    resource_tier: high
+  - code: zh
+    name: Chinese (Simplified)
+    resource_tier: high
+  - code: es
+    name: Spanish
+    resource_tier: high
+
+models_under_test:
+  - family: OpenAI
+    example_model: gpt-5-class      # pin exact model string at run time; check docs.claude.com-equivalent for provider
+  - family: Google
+    example_model: gemini-2.x
+  - family: Anthropic
+    example_model: claude-sonnet-4-6
+  - family: Meta
+    example_model: llama-3.x
+  - family: Google
+    example_model: gemma-2
+  - family: Alibaba
+    example_model: qwen-2.5

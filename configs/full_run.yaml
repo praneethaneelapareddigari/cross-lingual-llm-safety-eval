@@ -1,0 +1,30 @@
+# Model matrix for a full evaluation run.
+# IMPORTANT: model_name strings go stale fast — verify each against the
+# provider's current docs/model-list endpoint before launching a real run.
+models:
+  - provider: openai
+    model_name: gpt-5o          # placeholder — confirm current flagship model string
+    display_name: "GPT (OpenAI)"
+  - provider: google
+    model_name: gemini-2.5-pro  # placeholder — confirm current model string
+    display_name: "Gemini (Google)"
+  - provider: anthropic
+    model_name: claude-sonnet-4-6
+    display_name: "Claude (Anthropic)"
+  - provider: together
+    model_name: meta-llama/Llama-3.3-70B-Instruct-Turbo
+    display_name: "Llama (Meta)"
+  - provider: together
+    model_name: google/gemma-2-27b-it
+    display_name: "Gemma (Google)"
+  - provider: together
+    model_name: Qwen/Qwen2.5-72B-Instruct-Turbo
+    display_name: "Qwen (Alibaba)"
+
+run_settings:
+  max_tokens: 512
+  temperature: 0.0        # deterministic decoding for reproducibility
+  requests_per_minute_cap: 30   # be gentle with rate limits across 9 langs x 9 cats x 6 models
+  retry_attempts: 4
+  input_prompts: "data/assembled_prompts.jsonl"
+  output_path: "results/raw_outputs.jsonl"
