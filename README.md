@@ -4,11 +4,13 @@
 
 **Status: 🚧 Active Pilot** — Full writeup: [`paper/pilot_report.md`](paper/pilot_report.md)
 
+> **Research status:** This repository contains a completed evaluation framework and pilot infrastructure. Large-scale multilingual experiments are currently in progress.
+
 ---
 
 ## Abstract
 
-We present a multilingual benchmark for evaluating whether large language model safety behavior transfers consistently across languages. The benchmark spans 9 languages, 9 safety-critical domains, and 1,050 curated prompts, and combines local translation (NLLB-200), model evaluation (Ollama), paired statistical testing (McNemar, Wilson CI, Bootstrap, Cohen's h/κ), and a fully reproducible zero-cost infrastructure. The current pilot validates the evaluation pipeline and establishes the methodology for large-scale multilingual safety benchmarking.
+We present a multilingual benchmark for evaluating whether large language model safety behavior transfers consistently across languages. Unlike prior multilingual safety benchmarks, this work combines paired statistical testing, effect-size analysis, a fully local evaluation pipeline, and explicit support for under-studied South Indian languages (Telugu, Tamil, Kannada) to study whether safety alignment transfers consistently — providing both the methodology and the infrastructure to answer this question rigorously. The benchmark spans 9 languages, 9 safety-critical domains, and 1,050 curated prompts, and combines local translation (NLLB-200), model evaluation (Ollama), paired statistical testing (McNemar, Wilson CI, Bootstrap, Cohen's h/κ), and a fully reproducible zero-cost infrastructure. The current pilot validates the evaluation pipeline and establishes the methodology for large-scale multilingual safety benchmarking.
 
 This repository documents the complete research lifecycle — from benchmark design and infrastructure validation to statistical methodology and reproducible experimentation — rather than presenting only final results.
 
@@ -18,11 +20,11 @@ This repository documents the complete research lifecycle — from benchmark des
 
 | | |
 |---|---|
+| 📝 Seed prompts | 1,050 (sourced from AdvBench, XSTest, HONEST) |
 | 🌍 Languages | 9 (English, Hindi, Telugu, Tamil, Kannada, Arabic, French, Chinese, Spanish) |
 | 📂 Harm categories | 9 |
-| 📝 Seed prompts | 1,050 (sourced from AdvBench, XSTest, HONEST) |
-| 🤖 Models | **Implemented:** Llama ✓ · Gemma ✓ · Qwen ✓ &nbsp;&nbsp; **Planned:** GPT ○ · Claude ○ · Gemini ○ |
 | 📊 Statistical tests | 5 (McNemar, Wilson CI, Bootstrap CI, Cohen's h, Cohen's κ) |
+| 🤖 Models | **Implemented:** Llama ✓ · Gemma ✓ · Qwen ✓ &nbsp;&nbsp; **Planned:** GPT ○ · Claude ○ · Gemini ○ |
 | 💻 Pipeline | Fully local — NLLB-200 translation + Ollama generation, zero API keys |
 | 📄 Report | [Pilot v0 technical report](paper/pilot_report.md) |
 
@@ -30,13 +32,13 @@ This repository documents the complete research lifecycle — from benchmark des
 
 ## Repository Maturity
 
-```
-Infrastructure  ██████████  100%
-Dataset         ███████░░░   70%
-Experiments     ███░░░░░░░   30%
-Paper           ████░░░░░░   40%
-Documentation   █████████░   90%
-```
+| Component | Status |
+|---|---|
+| Infrastructure | ✅ Complete |
+| Dataset | 🚧 Mostly complete (medical category pending) |
+| Experiments | 🚧 In progress (Pilot v1 pending) |
+| Paper | 🚧 In progress (Pilot v0 report done) |
+| Documentation | ✅ Near complete |
 
 ---
 
@@ -85,10 +87,11 @@ This project contributes:
 - A paired statistical evaluation methodology (McNemar + effect sizes, not raw percentages)
 - A curated, source-traceable multilingual prompt dataset
 - An openly documented pilot methodology including threats to validity
+- A documented framework for validating multilingual safety evaluation infrastructure before large-scale experimentation
 
 ## How This Compares to Prior Work
 
- | Feature | AdvBench | HarmBench | XSTest | XSafety | This Work |
+| Feature | AdvBench | HarmBench | XSTest | XSafety | This Work |
 |---|---|---|---|---|---|
 | Languages | 1 | 1 | 1 | 10 | **9** |
 | Harm categories | Broad | 10+ | 2 | 10 | **9** |
@@ -98,17 +101,20 @@ This project contributes:
 | Open-source reproducible pipeline | ❌ | ❌ | ❌ | ❌ | **✅** |
 | Technical report included | ❌ | ❌ | ❌ | ❌ | **✅** |
 | South Indian languages | ❌ | ❌ | ❌ | ❌ | **✅** |
+| Pilot infrastructure validation documented | ❌ | ❌ | ❌ | ❌ | **✅** |
 
 ## Architecture
 
+The benchmark follows a five-stage pipeline designed to maximize reproducibility while keeping the entire evaluation runnable on consumer hardware.
+
 ```mermaid
 graph TD
-    A[Seed] --> B[Translate]
-    B --> C[Generate]
-    C --> D[Judge]
-    D --> E[Statistics]
-    E --> F[Visualize]
-    F --> G[Report]
+    A[Seed Prompts] --> B[Translation: NLLB-200 + back-translation QA]
+    B --> C[Generation: Llama, Gemma, Qwen via Ollama]
+    C --> D[Judge: Rule-based classifier + manual validation]
+    D --> E[Statistics: McNemar, Wilson CI, Bootstrap, Cohen h/kappa]
+    E --> F[Visualization: Heatmaps, bar charts, effect-size scatter]
+    F --> G[Technical Report]
 ```
 
 The evaluation pipeline consists of five stages: (1) dataset construction from published benchmarks, (2) NLLB-200 translation with back-translation fidelity QA, (3) model inference via Ollama at temperature 0, (4) safety evaluation via rule-based judge with manual validation, and (5) paired statistical analysis across language pairs.
@@ -125,16 +131,29 @@ Two real issues found through actually running the pipeline — not assumed:
 
 ## Threats to Validity
 
+**Measurement validity**
+
 | Threat | Description |
 |---|---|
-| Translation ambiguity | NLLB-200 may introduce semantic drift; back-translation BLEU-checking catches the worst cases but not all |
-| Translation quality drift | NLLB-200 performance varies by domain — safety-critical phrasing may translate less reliably than general text |
 | Judge reliability | Rule-based classifier has sparse non-English phrase lists; manual κ validation is required before trusting non-English numbers |
-| Sample size | Current partial run validates pipeline functionality only — insufficient to confirm or reject H1 |
+| BLEU limitations | Back-translation BLEU-checking over-flags valid paraphrases; flagged items require manual spot-checking |
+
+**Internal validity**
+
+| Threat | Description |
+|---|---|
+| Translation ambiguity | NLLB-200 may introduce semantic drift not caught by back-translation QA |
+| Translation quality drift | NLLB-200 performance varies by domain — safety-critical phrasing may translate less reliably than general text |
 | Model version drift | Ollama model tags may update; exact versions are logged at evaluation time |
+
+**External validity**
+
+| Threat | Description |
+|---|---|
+| Sample size | Current partial run validates pipeline functionality only — insufficient to confirm or reject H1 |
 | Hardware constraints | 8GB-RAM machine constrained experiment scale and caused one translation run interruption |
 
-## Open Questions
+## Future Research Directions
 
 - Does multilingual RLHF coverage explain refusal-rate gaps across languages?
 - Can back-translation quality scores predict per-language safety measurement reliability?
@@ -146,10 +165,10 @@ Two real issues found through actually running the pipeline — not assumed:
 | Version | Milestone | Status |
 |---|---|---|
 | Pilot v0 | Infrastructure validation + smoke test | ✅ |
-| Pilot v1 | `hate` category, 2 languages, 3 models, real κ | 🚧 |
-| Benchmark v1 | All 9 categories, 8 languages, full statistical analysis | ⬜ |
-| Paper Draft | Results writeup + threats to validity | ⬜ |
-| Dataset Release | Public release under data-use agreement | ⬜ |
+| Pilot v1 | `hate` category, 2 languages, 3 models, real κ | 🚧 July 2026 |
+| Benchmark v1 | All 9 categories, 8 languages, full statistical analysis | ⬜ Aug 2026 |
+| Paper Draft | Results writeup + threats to validity | ⬜ Sep 2026 |
+| Dataset Release | Public release under data-use agreement | ⬜ TBD |
 
 ## Reproducibility
 
@@ -178,11 +197,11 @@ cross-lingual-llm-safety-eval/
 ├── data/
 │   ├── categories.yaml         # 9-category harm taxonomy
 │   ├── sourcing_plan.md        # upstream source per category/language
-│   └── raw/                   # seed prompts (AdvBench/HONEST/XSTest)
+│   └── raw/                    # seed prompts (AdvBench/HONEST/XSTest)
 ├── src/
-│   ├── data_pipeline/           # NLLB-200 translation + loader
+│   ├── data_pipeline/          # NLLB-200 translation + loader
 │   ├── models/                 # Ollama client + paid-API providers
-│   ├── judge/                 # rule-based judge + manual validation
+│   ├── judge/                  # rule-based judge + manual validation
 │   └── stats/                  # McNemar, Wilson CI, bootstrap, Cohen's h/κ
 ├── visualizations/             # dashboard + generated figures
 ├── paper/
@@ -190,7 +209,7 @@ cross-lingual-llm-safety-eval/
 │   ├── proposal.md             # full research protocol
 │   └── related_work.md         # annotated bibliography
 ├── configs/                    # local/full/smoke-test run configs
-└── scripts/                   # data-prep + figure-generation scripts
+└── scripts/                    # data-prep + figure-generation scripts
 ```
 
 ## Ethics
@@ -198,6 +217,8 @@ cross-lingual-llm-safety-eval/
 This project evaluates existing public model behavior — no models are fine-tuned to be more harmful, and no novel harmful prompts are authored. All seed prompts are sourced from and traceable to already-published, ethically-released benchmarks. See [`data/sourcing_plan.md`](data/sourcing_plan.md) for full provenance.
 
 ## Citation
+
+Preprint in preparation. If referencing this repository in its current pilot state, please cite:
 
 ```bibtex
 @misc{neelapareddigari2026crosslingual,
