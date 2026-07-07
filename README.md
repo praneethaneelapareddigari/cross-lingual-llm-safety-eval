@@ -121,6 +121,8 @@ Paper (paper/proposal.md)
 
 ## Key Findings (so far — methodological, not yet behavioral)
 
+![Pilot v0 smoke test label breakdown](visualizations/figures/smoke_test_label_breakdown.png)
+
 Like most first pilots, this project's most valuable output to date is
 methodological, not behavioral — real issues found through actually running
 the pipeline, not assumed:
