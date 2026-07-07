@@ -2,9 +2,15 @@
 
 ![python](https://img.shields.io/badge/python-3.10+-blue) ![license](https://img.shields.io/badge/license-MIT-green) ![status](https://img.shields.io/badge/status-pilot%20in%20progress-yellow) ![pipeline](https://img.shields.io/badge/pipeline-fully%20local-brightgreen)
 
-A multilingual benchmark evaluating whether LLM safety behavior holds consistently across languages and regions.
-
 **Status: 🚧 Active Pilot** — Full writeup: [`paper/pilot_report.md`](paper/pilot_report.md)
+
+---
+
+## Abstract
+
+We present a multilingual benchmark for evaluating whether large language model safety behavior transfers consistently across languages. The benchmark spans 9 languages, 9 safety-critical domains, and 1,050 curated prompts, and combines local translation (NLLB-200), model evaluation (Ollama), paired statistical testing (McNemar, Wilson CI, Bootstrap, Cohen's h/κ), and a fully reproducible zero-cost infrastructure. The current pilot validates the evaluation pipeline and establishes the methodology for large-scale multilingual safety benchmarking.
+
+This repository documents the complete research lifecycle — from benchmark design and infrastructure validation to statistical methodology and reproducible experimentation — rather than presenting only final results.
 
 ---
 
@@ -15,10 +21,22 @@ A multilingual benchmark evaluating whether LLM safety behavior holds consistent
 | 🌍 Languages | 9 (English, Hindi, Telugu, Tamil, Kannada, Arabic, French, Chinese, Spanish) |
 | 📂 Harm categories | 9 |
 | 📝 Seed prompts | 1,050 (sourced from AdvBench, XSTest, HONEST) |
-| 🤖 Models | Llama ✓ · Gemma ✓ · Qwen ✓ · GPT ○ · Claude ○ · Gemini ○ |
+| 🤖 Models | **Implemented:** Llama ✓ · Gemma ✓ · Qwen ✓ &nbsp;&nbsp; **Planned:** GPT ○ · Claude ○ · Gemini ○ |
 | 📊 Statistical tests | 5 (McNemar, Wilson CI, Bootstrap CI, Cohen's h, Cohen's κ) |
 | 💻 Pipeline | Fully local — NLLB-200 translation + Ollama generation, zero API keys |
 | 📄 Report | [Pilot v0 technical report](paper/pilot_report.md) |
+
+---
+
+## Repository Maturity
+
+```
+Infrastructure  ██████████  100%
+Dataset         ███████░░░   70%
+Experiments     ███░░░░░░░   30%
+Paper           ████░░░░░░   40%
+Documentation   █████████░   90%
+```
 
 ---
 
@@ -40,12 +58,6 @@ A multilingual benchmark evaluating whether LLM safety behavior holds consistent
 
 ---
 
-## Abstract
-
-Most public LLM safety benchmarks are English-only — a 2025 survey found 78.5% of safety datasets evaluate English exclusively. Models are deployed globally serving users in Hindi, Telugu, Tamil, Kannada, Arabic, Chinese, French, and Spanish simultaneously. If safety alignment degrades across languages, that gap is invisible to English-only evaluation and only surfaces in production.
-
-This project measures whether open-weight LLMs' safety behavior — refusal, over-refusal, harm severity — holds consistently across 9 languages and 9 harm categories, using a fully local, zero-cost, reproducible pipeline with paired statistical testing rather than raw percentage comparisons.
-
 ## Why This Matters
 
 - Most safety benchmarks evaluate only English, despite global LLM deployment
@@ -64,30 +76,44 @@ This project measures whether open-weight LLMs' safety behavior — refusal, ove
 | H2 | Over-refusal on benign prompts does not increase proportionally with any refusal-rate drop — i.e., a genuine safety-transfer failure, not general capability degradation |
 | H3 | The cross-lingual safety gap varies by harm category, not uniformly |
 
+## Contributions
+
+This project contributes:
+
+- A multilingual LLM safety benchmark spanning 9 languages and 9 harm categories
+- A fully local, reproducible evaluation pipeline (zero API keys, zero cost)
+- A paired statistical evaluation methodology (McNemar + effect sizes, not raw percentages)
+- A curated, source-traceable multilingual prompt dataset
+- An openly documented pilot methodology including threats to validity
+
 ## How This Compares to Prior Work
 
-| Feature | AdvBench | HarmBench | XSTest | XSafety | This Work |
+ | Feature | AdvBench | HarmBench | XSTest | XSafety | This Work |
 |---|---|---|---|---|---|
 | Languages | 1 | 1 | 1 | 10 | **9** |
 | Harm categories | Broad | 10+ | 2 | 10 | **9** |
 | Paired statistics | ❌ | Limited | ❌ | ❌ | **✅** |
 | Effect sizes | ❌ | ❌ | ❌ | ❌ | **✅** |
-| Fully local pipeline | ❌ | ❌ | ❌ | ❌ | **✅** |
+| Statistical significance testing | ❌ | Limited | ❌ | ❌ | **✅** |
+| Open-source reproducible pipeline | ❌ | ❌ | ❌ | ❌ | **✅** |
+| Technical report included | ❌ | ❌ | ❌ | ❌ | **✅** |
 | South Indian languages | ❌ | ❌ | ❌ | ❌ | **✅** |
 
 ## Architecture
 
 ```mermaid
 graph TD
-    A[Seed Prompts\nAdvBench · XSTest · HONEST] --> B[Translation\nNLLB-200 + back-translation QA]
+    A[Seed Prompts\nAdvBench · XSTest · HONEST] <--> B[Translation\nNLLB-200 + back-translation QA]
     B --> C[Generation\nOllama: Llama · Gemma · Qwen]
-    C --> D[Judge Layer\nRule-based classifier + manual κ validation]
-    D --> E[Statistics\nMcNemar · Wilson CI · Bootstrap · Cohen's h/κ]
+    C --> DJJudge Layer\nRule-based classifier + manual κ validation]
+    D --> E[Statistics\nMcNemar · Wilson CI · Bootstrap · Cohen's h/κ
     E --> F[Visualization\nHeatmaps · Bar charts · Effect-size scatter]
-    F --> G[Technical Report]
+    F --> G\[Technical Report\]
 ```
 
-## Key Findings (Pilot v0 — methodological)
+The evaluation pipeline consists of five stages: (1) dataset construction from published benchmarks, (2) NLLB-200 translation with back-translation fidelity QA, (3) model inference via Ollama at temperature 0, (4) safety evaluation via rule-based judge with manual validation, and (5) paired statistical analysis across language pairs.
+
+## Pilot Infrastructure Findings
 
 ![Pilot v0 smoke test label breakdown](visualizations/figures/smoke_test_label_breakdown.png)
 
@@ -102,6 +128,7 @@ Two real issues found through actually running the pipeline — not assumed:
 | Threat | Description |
 |---|---|
 | Translation ambiguity | NLLB-200 may introduce semantic drift; back-translation BLEU-checking catches the worst cases but not all |
+| Translation quality drift | NLLB-200 performance varies by domain — safety-critical phrasing may translate less reliably than general text |
 | Judge reliability | Rule-based classifier has sparse non-English phrase lists; manual κ validation is required before trusting non-English numbers |
 | Sample size | Current partial run validates pipeline functionality only — insufficient to confirm or reject H1 |
 | Model version drift | Ollama model tags may update; exact versions are logged at evaluation time |
@@ -116,17 +143,13 @@ Two real issues found through actually running the pipeline — not assumed:
 
 ## Roadmap
 
-| Milestone | Status |
-|---|---|
-| Research design + pipeline | ✅ |
-| Seed dataset assembly | ✅ |
-| Pilot infrastructure validation | ✅ |
-| Multilingual translation (`hate` category) | 🚧 |
-| Pilot v1 experiments (3 models × 2 languages) | 🚧 |
-| Manual judge validation (Cohen's κ) | ⬜ |
-| Expanded benchmark (all 9 categories) | ⬜ |
-| Human validation subset | ⬜ |
-| Paper / preprint | ⬜ |
+| Version | Milestone | Status |
+|---|---|---|
+| Pilot v0 | Infrastructure validation + smoke test | ✅ |
+| Pilot v1 | `hate` category, 2 languages, 3 models, real κ | 🚧 |
+| Benchmark v1 | All 9 categories, 8 languages, full statistical analysis | ⬜ |
+| Paper Draft | Results writeup + threats to validity | ⬜ |
+| Dataset Release | Public release under data-use agreement | ⬜ |
 
 ## Reproducibility
 
@@ -159,7 +182,7 @@ cross-lingual-llm-safety-eval/
 ├── src/
 │   ├── data_pipeline/           # NLLB-200 translation + loader
 │   ├── models/                 # Ollama client + paid-API providers
-│   ├── judge/                  # rule-based judge + manual validation
+│   ├── judge/                 # rule-based judge + manual validation
 │   └── stats/                  # McNemar, Wilson CI, bootstrap, Cohen's h/κ
 ├── visualizations/             # dashboard + generated figures
 ├── paper/
@@ -167,7 +190,7 @@ cross-lingual-llm-safety-eval/
 │   ├── proposal.md             # full research protocol
 │   └── related_work.md         # annotated bibliography
 ├── configs/                    # local/full/smoke-test run configs
-└── scripts/                    # data-prep + figure-generation scripts
+└── scripts/                   # data-prep + figure-generation scripts
 ```
 
 ## Ethics
