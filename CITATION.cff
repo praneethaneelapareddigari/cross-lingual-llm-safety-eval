@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Cross-Lingual LLM Safety Evaluation"
+authors:
+  - family-names: "Neelapareddigari"
+    given-names: "Praneetha"
+date-released: 2026-07-07
+url: "https://github.com/praneethaneelapareddigari/cross-lingual-llm-safety-eval"
+license: MIT
+version: "0.1.0-pilot"
+repository-code: "https://github.com/praneethaneelapareddigari/cross-lingual-llm-safety-eval"
+abstract: >
+  A multilingual benchmark evaluating whether LLM safety behavior — refusal,
+  harmfulness, over-refusal — holds consistently across languages and
+  regions, using a paired-statistics framework (McNemar, Wilson CI,
+  bootstrap CI, Cohen's h, Cohen's Kappa). Status: pilot in progress.
