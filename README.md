@@ -4,13 +4,13 @@
 
 **Status: 🚧 Active Pilot** — Full writeup: [`paper/pilot_report.md`](paper/pilot_report.md)
 
-> **Research status:** This repository contains a completed evaluation framework and pilot infrastructure. Large-scale multilingual experiments are currently in progress.
+> **Research status:** This repository contains a completed evaluation framework and pilot infrastructure. Evaluation infrastructure is complete, pilot validation has been completed, and large-scale multilingual experiments are currently underway.
 
 ---
 
 ## Abstract
 
-We present a multilingual benchmark for evaluating whether large language model safety behavior transfers consistently across languages. Unlike prior multilingual safety benchmarks, this work combines paired statistical testing, effect-size analysis, a fully local evaluation pipeline, and explicit support for under-studied South Indian languages (Telugu, Tamil, Kannada) to study whether safety alignment transfers consistently — providing both the methodology and the infrastructure to answer this question rigorously. The benchmark spans 9 languages, 9 safety-critical domains, and 1,050 curated prompts, and combines local translation (NLLB-200), model evaluation (Ollama), paired statistical testing (McNemar, Wilson CI, Bootstrap, Cohen's h/κ), and a fully reproducible zero-cost infrastructure. The current pilot validates the evaluation pipeline and establishes the methodology for large-scale multilingual safety benchmarking.
+We present a multilingual benchmark for evaluating whether large language model safety behavior transfers consistently across languages. Unlike prior multilingual safety benchmarks, this work combines paired statistical testing, effect-size analysis, a fully local evaluation pipeline, and explicit support for under-studied South Indian languages (Telugu, Tamil, Kannada) to study whether safety alignment transfers consistently — providing a reproducible methodology and infrastructure for rigorous multilingual safety evaluation. The benchmark spans 9 languages, 9 safety-critical domains, and 1,050 curated prompts, and combines local translation (NLLB-200), model evaluation (Ollama), paired statistical testing (McNemar, Wilson CI, Bootstrap, Cohen's h/κ), and a fully reproducible zero-cost infrastructure. The current pilot validates the evaluation pipeline and establishes the methodology for large-scale multilingual safety benchmarking.
 
 This repository documents the complete research lifecycle — from benchmark design and infrastructure validation to statistical methodology and reproducible experimentation — rather than presenting only final results.
 
