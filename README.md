@@ -4,7 +4,7 @@
 
 **Status: 🚧 Active Pilot** — Full writeup: [`paper/pilot_report.md`](paper/pilot_report.md)
 
-> **Research status:** This repository contains a completed evaluation framework and pilot infrastructure. Evaluation infrastructure is complete, pilot validation has been completed, and large-scale multilingual experiments are currently underway.
+> **Research status:** The evaluation framework has been implemented and validated through pilot experiments. Larger multilingual benchmark experiments are currently underway.
 
 ---
 
@@ -88,6 +88,7 @@ This project contributes:
 - A curated, source-traceable multilingual prompt dataset
 - An openly documented pilot methodology including threats to validity
 - A documented framework for validating multilingual safety evaluation infrastructure before large-scale experimentation
+- An infrastructure-first evaluation workflow that validates multilingual safety measurement reliability before scaling
 
 ## How This Compares to Prior Work
 
@@ -119,7 +120,7 @@ graph TD
 
 The evaluation pipeline consists of five stages: (1) dataset construction from published benchmarks, (2) NLLB-200 translation with back-translation fidelity QA, (3) model inference via Ollama at temperature 0, (4) safety evaluation via rule-based judge with manual validation, and (5) paired statistical analysis across language pairs.
 
-## Pilot Infrastructure Findings
+## Lessons Learned from Pilot Validation
 
 ![Pilot v0 smoke test label breakdown](visualizations/figures/smoke_test_label_breakdown.png)
 
@@ -155,10 +156,10 @@ Two real issues found through actually running the pipeline — not assumed:
 
 ## Future Research Directions
 
-- Does multilingual RLHF coverage explain refusal-rate gaps across languages?
-- Can back-translation quality scores predict per-language safety measurement reliability?
-- Does the cross-lingual safety gap correlate with harm category severity, or is it uniform?
-- Are refusal patterns consistent across open-weight model families, or model-family-specific?
+1. **Priority 1:** Does multilingual RLHF coverage explain refusal-rate gaps across languages?
+2. **Priority 2:** Does the cross-lingual safety gap correlate with harm category severity, or is it uniform?
+3. **Priority 3:** Can back-translation quality scores predict per-language safety measurement reliability?
+4. **Priority 4:** Are refusal patterns consistent across open-weight model families, or model-family-specific?
 
 ## Roadmap
 
